@@ -7,5 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Folder extends Model
 {
-    use HasFactory;
+    // use HasFactory;
+    public function tasks() {
+        return $this->hasMany("App\Models\Task");
+    }
 }
