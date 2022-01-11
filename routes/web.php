@@ -14,9 +14,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', "HomeController@index", function () {
+    return view('home');
 });
+// Route::get('/', "DashboardController@index", function () {
+//     return view('dashboard');
+// });
 
 Route::get('/folders/{id}/tasks', 'TaskController@index')->name('tasks.index');
 Route::get("/folders/{id}/tasks/create", "TaskController@showCreateForm")->name("tasks.create");
