@@ -13,7 +13,7 @@ class HomeController extends Controller
         if(is_null($folder)) {
             return view("home");
         } else {
-            return redirect()->rouote("task.index", [
+            return redirect()->route("tasks.index", [
                 "id" => $folder->id,
             ]);
         }
