@@ -12,37 +12,40 @@ use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
-    public function create(int $id, CreateTask $request) {
-        $current_folder = Folder::find($id);
-
+    public function create(Folder $folder, CreateTask $request) {
         $task = new Task(); // new task instance
         $task->title = $request->title;
         $task->due_date = $request->due_date;
 
-        $current_folder->tasks()->save($task);
+        $folder->tasks()->save($task);
 
         return redirect()->route("tasks.index", [
-            'id' => $current_folder->id,
+            'id' => $folder->id,
         ]);
     }
-    public function showCreateForm(int $id) {
+    public function showCreateForm(folder $folder) {
         return view("tasks/create", [
-            "folder_id" => $id,
+            "folder_id" => $folder->id,
         ]);
+    }
+
+    private function checkRelation(Folder $folder, Task $task) {
+        if($folder->id !== $task->folder) {
+            abort(404);
+        }
     }
     /**
      * GET /folders/{id}/tasks/{task_id}/edit
      */
-    public function showEditForm(int $id, int $task_id) {
-        $task = Task::find($task_id);
+    public function showEditForm(Folder $folder, Task $task) {
+        $this->checkRelation($folder, $task);
         return view("tasks/edit", [
             "task" => $task,
         ]);
     }
 
-    public function edit (int $id, int $task_id, EditTask $request) {
-        // 1
-        $task = Task::find($task_id);
+    public function edit (Folder $folder, Task $task, EditTask $request) {
+        $this->checkRelation($folder, $task);
         // 2
         $task->title = $request->title;
         $task->status = $request->status;
@@ -54,21 +57,18 @@ class TaskController extends Controller
         ]);
     }
 
-    public function index(int $id)
+    public function index(Folder $folder)
     {
         // get info of all folders
         $folders = Auth::user()->folders()->get();
         // $folders = Folder::all();
 
-        // get a selected folder
-        $current_folder = Folder::find($id);
-
         // get tasks attached to the folder
-        $tasks = $current_folder->tasks()->get();
+        $tasks = $folder->tasks()->get();
 
         return view("tasks/index", [
             'folders' => $folders,
-            'current_folder_id' => $current_folder->id,
+            'current_folder_id' => $folder->id,
             'tasks' => $tasks,
         ]);
     }
