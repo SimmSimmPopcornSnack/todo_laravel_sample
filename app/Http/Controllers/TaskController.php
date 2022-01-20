@@ -30,7 +30,7 @@ class TaskController extends Controller
     }
 
     private function checkRelation(Folder $folder, Task $task) {
-        if($folder->id !== $task->folder) {
+        if($folder->id !== $task->folder_id) {
             abort(404);
         }
     }
@@ -53,7 +53,7 @@ class TaskController extends Controller
         $task->save();
         // 3
         return redirect()->route("tasks.index", [
-            "id" => $task->folder_id,
+            "folder" => $task->folder_id,
         ]);
     }
 
